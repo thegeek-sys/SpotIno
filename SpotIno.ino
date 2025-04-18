@@ -208,16 +208,16 @@ void setup() {
 	//SPIFFS.remove("/next-track.bmp");
 
 	// initialise touch
-	uint16_t calData[5] = { 279, 3550, 313, 3452, 3 };
+	uint16_t calData[5] = { 281, 3526, 359, 3403, 5 };
 	tft.setTouch(calData);
 
 	//led
 	pinMode(4, OUTPUT);
 	pinMode(17, OUTPUT);
 	pinMode(16, OUTPUT);
-	digitalWrite(4, 0);
-	digitalWrite(16, 0);
-	digitalWrite(17, 0);
+	digitalWrite(4, 0); // B
+	digitalWrite(16, 0); // G
+	digitalWrite(17, 0); // R
 }
 
 void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
@@ -273,7 +273,7 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 	}
 
 	if (secondsPast*1000 > currentlyPlaying.progressMs) {
-		tft.fillRect(tft.width()/2-99, BAR_HEIGHT+1, (int)(pixelPast)-1, 11, mainColor);
+		tft.fillRect(tft.width()/2-99, BAR_HEIGHT+1, (int)(pixelPast)-1, 13, mainColor);
 	}
 	pixelPast = (200*((float)currentlyPlaying.progressMs/1000))/((float)currentlyPlaying.durationMs/1000);
 	secondsPast = currentlyPlaying.progressMs/1000;
@@ -421,30 +421,74 @@ bool getResultsCallback(PlaylistResult result, int index, int numResults) {
 }
 
 void showVolume(int volume) {
-	tft.fillRect(tft.width()/2+77, 30, 10, 130, altColor);
-	tft.fillRect(tft.width()/2+89, 10, 20, 170, mainColor);
-	tft.drawRect(tft.width()/2+77, 30, 10, 130, altColor);
-	tft.fillRect(tft.width()/2+78, 31, 8, (100-volume)*1.3, mainColor);
+	tft.fillRect(tft.width()/2+77, 30, 13, 130, altColor);
+	tft.fillRect(tft.width()/2+89, 10, 40, 170, mainColor);
+	tft.drawRect(tft.width()/2+77, 30, 13, 130, altColor);
+	tft.fillRect(tft.width()/2+78, 31, 11, (100-volume)*1.3, mainColor);
 	//tft.fillRect(245, 20, 10, 130, altColor);
 	//tft.fillRect(257, 0, 20, 170, mainColor);
 	//tft.drawRect(245, 20, 10, 130, altColor);
 	//tft.fillRect(246, 21, 8, (100-volume)*1.3, mainColor);
-	tft.drawNumber(volume, tft.width()/2+88, ((100-volume)*1.3)+28);
+	tft.drawNumber(volume, tft.width()/2+91, ((100-volume)*1.3)+28);
 }
 
 void showVolume(PlayerDetails playerDetails) {
 	if (prevVolume != playerDetails.device.volumePercent) {
 		prevVolume = playerDetails.device.volumePercent;
-		tft.fillRect(tft.width()/2+77, 30, 10, 130, altColor);
-		tft.fillRect(tft.width()/2+89, 10, 20, 170, mainColor);
-		tft.drawRect(tft.width()/2+77, 30, 10, 130, altColor);
-		tft.fillRect(tft.width()/2+78, 31, 8, (100-playerDetails.device.volumePercent)*1.3, mainColor);
+		tft.fillRect(tft.width()/2+77, 30, 13, 130, altColor);
+		tft.fillRect(tft.width()/2+89, 10, 40, 170, mainColor);
+		tft.drawRect(tft.width()/2+77, 30, 13, 130, altColor);
+		tft.fillRect(tft.width()/2+78, 31, 11, (100-playerDetails.device.volumePercent)*1.3, mainColor);
 		/*tft.fillRect(245, 20, 10, 130, altColor);
 		tft.fillRect(257, 0, 20, 170, mainColor);
 		tft.drawRect(245, 20, 10, 130, altColor);
 		tft.fillRect(246, 21, 8, (100-playerDetails.device.volumePercent)*1.3, mainColor);*/
-		tft.drawNumber(playerDetails.device.volumePercent, tft.width()/2+88, ((100-playerDetails.device.volumePercent)*1.3)+28);
+		tft.drawNumber(playerDetails.device.volumePercent, tft.width()/2+91, ((100-playerDetails.device.volumePercent)*1.3)+28);
 	}
+}
+
+void handleTouch(uint16_t t_x, uint16_t t_y) {
+		Serial.println((String)"clicked ("+t_x+", "+t_y+")");
+		// clicked next
+		if (t_x>=PREV_X && t_x<=PREV_X+48 && t_y>=260 && t_y<=308) {
+			drawBmp("/previous-track-reverse.bmp", PREV_X, 260);
+			spotify.previousTrack();
+			action = true;
+			Serial.println("PREV");
+		}
+
+		// clicked prev
+		if (t_x>=NEXT_X && t_x<=NEXT_X+48 && t_y>=260 && t_y<=308) {
+			drawBmp("/next-track-reverse.bmp", NEXT_X, 260);
+			spotify.nextTrack();
+			action = true;
+			Serial.println("NEXT");
+		}
+
+		// clicked next
+		if (t_x>=PLAY_X && t_x<=PLAY_X+48 && t_y>=260 && t_y<=308) {
+			if (isPlaying) {
+				drawBmp("/circle-play-reverse.bmp", PLAY_X, 260);
+				spotify.pause();
+			}
+			else {
+				drawBmp("/circle-pause-reverse.bmp", PLAY_X, 260);
+				spotify.play();	
+			}
+			isPlaying = !isPlaying;
+			action = true;
+			Serial.println("PLAY/PAUSE");
+		}
+
+		if (t_x>=tft.width()/2+70 && t_x<=tft.width()/2+100 && t_y>=20 && t_y<=170) {
+			t_y = max((int)t_y, 30);
+			t_y = min((int)t_y, 160);
+			prevVolume=(130-(t_y-30))*100/130;
+			showVolume(prevVolume);
+			spotify.setVolume(prevVolume);
+			Serial.print("setting volume: ");
+			Serial.println(prevVolume);
+		}
 }
 
 
@@ -481,38 +525,7 @@ void loop() {
 	uint16_t t_x = 0, t_y = 0;
 	bool pressed = tft.getTouch(&t_x, &t_y);
 	
-	if (pressed) {
-		// clicked next
-		if (t_x>=PREV_X && t_x<=PREV_X+48 && 260<=t_y<=308) {
-			drawBmp("/next-track-reverse.bmp", NEXT_X, 260);
-			spotify.nextTrack();
-			action = true;
-			Serial.println("NEXT");
-		}
-
-		// clicked prev
-		if (t_x>=NEXT_X && t_x<=NEXT_X+48 && 260<=t_y<=308) {
-			drawBmp("/previous-track-reverse.bmp", PREV_X, 260);
-			spotify.previousTrack();
-			action = true;
-			Serial.println("PREV");
-		}
-
-		// clicked next
-		if (t_x>=PLAY_X && t_x<=PLAY_X+48 && 260<=t_y<=308) {
-			if (isPlaying) {
-				drawBmp("/circle-play-reverse.bmp", PLAY_X, 260);
-				spotify.pause();
-			}
-			else {
-				drawBmp("/circle-pause-reverse.bmp", PLAY_X, 260);
-				spotify.play();	
-			}
-			isPlaying = !isPlaying;
-			action = true;
-			Serial.println("PLAY/PAUSE");
-		}
-	}
+	if (pressed) handleTouch(t_x, t_y);
 
 	if(lastSw == HIGH && currSw == LOW) {
 		Serial.println("SW");
@@ -710,25 +723,20 @@ void loop() {
 		int status = spotify.getCurrentlyPlaying(printCurrentlyPlayingToSerial, SPOTIFY_MARKET);
 		spotify.getPlayerDetails(showVolume, SPOTIFY_MARKET);
 
-        if (status == 200)
-        {
+        if (status == 200) {
 			Serial.println("Successfully got currently playing");
 			//tft.fillCircle(315, 5, 3, TFT_GREEN);
 			digitalWrite(16, 1);
-			digitalWrite(4, 0);
-        }
-        else if (status == 204)
-        {
+			digitalWrite(17, 0);
+        } else if (status == 204) {
             Serial.println("Doesn't seem to be anything playing");
 			//tft.fillCircle(315, 5, 3, TFT_GREEN);
 			digitalWrite(16, 1);
-			digitalWrite(4, 0);
-        }
-        else
-        {
+			digitalWrite(17, 0);
+        } else {
 			//tft.fillCircle(315, 5, 3, TFT_RED);
 			digitalWrite(4, 1);
-			digitalWrite(16, 0);
+			digitalWrite(17, 0);
             Serial.print("Error: ");
             Serial.println(status);
         }
