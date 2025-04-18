@@ -112,11 +112,11 @@ UserPlaylistsResult playlists[25] = {NULL};
 PlaylistResult songs[50] = {NULL};
 
 #ifdef LIGHT_THEME
-uint16_t mainColor = TFT_WHITE;
-uint16_t altColor = TFT_BLACK;
-#elif defined(DARK_THEME)
-uint16_t mainColor = TFT_BLACK;
 uint16_t altColor = TFT_WHITE;
+uint16_t mainColor = TFT_BLACK;
+#elif defined(DARK_THEME)
+uint16_t altColor = TFT_BLACK;
+uint16_t mainColor = TFT_WHITE;
 #endif
 
 String song;
@@ -136,7 +136,7 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) 
 
 void setup() {
 	
-	//tft.setTextColor(altColor, mainColor);
+	//tft.setTextColor(mainColor, altColor);
     Serial.begin(115200);
 	Serial.setTimeout(15000);
 
@@ -273,7 +273,7 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 	}
 
 	if (secondsPast*1000 > currentlyPlaying.progressMs) {
-		tft.fillRect(tft.width()/2-99, BAR_HEIGHT+1, (int)(pixelPast)-1, 13, mainColor);
+		tft.fillRect(tft.width()/2-99, BAR_HEIGHT+1, (int)(pixelPast)-1, 13, altColor);
 	}
 	pixelPast = (200*((float)currentlyPlaying.progressMs/1000))/((float)currentlyPlaying.durationMs/1000);
 	secondsPast = currentlyPlaying.progressMs/1000;
@@ -293,8 +293,8 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 			displaySong = song.substring(0, song.indexOf("(")-1);
 		}
 
-		tft.fillScreen(mainColor);
-		tft.setTextColor(altColor, mainColor);
+		tft.fillScreen(altColor);
+		tft.setTextColor(mainColor, altColor);
 
 		uint32_t t = millis();
 
@@ -323,7 +323,7 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 		Serial.println(imageDelay);
 		tft.drawCentreString(displaySong, tft.width()/2, 175, FONT_TYPE);
 		tft.drawCentreString(artists, tft.width()/2, 200, FONT_TYPE);
-		tft.drawRect(tft.width()/2-100, BAR_HEIGHT, 200, 13, altColor);
+		tft.drawRect(tft.width()/2-100, BAR_HEIGHT, 200, 13, mainColor);
 		String seconds = String((currentlyPlaying.durationMs+imageDelay)/1000%60);
 		durationSec = currentlyPlaying.durationMs/1000;
 		String totTime = String((currentlyPlaying.durationMs+imageDelay)/1000/60) + ":" + (seconds.toInt()<10 ? "0"+seconds : seconds);
@@ -350,9 +350,9 @@ bool getPlaylistsCallback(UserPlaylistsResult result, int index, int numPlaylist
 	Serial.println(result.playlistName);
 
 	if (index == 0) {
-		tft.setTextColor(mainColor);
-		tft.fillRect(0, 0, 255, 16, altColor);
-	} else if (index == 1) tft.setTextColor(altColor);
+		tft.setTextColor(altColor);
+		tft.fillRect(0, 0, 255, 16, mainColor);
+	} else if (index == 1) tft.setTextColor(mainColor);
 
 	maxPlaylists = index;
 
@@ -397,9 +397,9 @@ bool getResultsCallback(PlaylistResult result, int index, int numResults) {
 	//tft.print(result.artists[0].artistName);
 
 	if (index == 0) {
-		tft.setTextColor(mainColor);
-		tft.fillRect(0, 0, 320, 16, altColor);
-	} else if (index == 1) tft.setTextColor(altColor);
+		tft.setTextColor(altColor);
+		tft.fillRect(0, 0, 320, 16, mainColor);
+	} else if (index == 1) tft.setTextColor(mainColor);
 
 
 
@@ -421,28 +421,28 @@ bool getResultsCallback(PlaylistResult result, int index, int numResults) {
 }
 
 void showVolume(int volume) {
-	tft.fillRect(tft.width()/2+77, 30, 13, 130, altColor);
-	tft.fillRect(tft.width()/2+89, 10, 40, 170, mainColor);
-	tft.drawRect(tft.width()/2+77, 30, 13, 130, altColor);
-	tft.fillRect(tft.width()/2+78, 31, 11, (100-volume)*1.3, mainColor);
-	//tft.fillRect(245, 20, 10, 130, altColor);
-	//tft.fillRect(257, 0, 20, 170, mainColor);
-	//tft.drawRect(245, 20, 10, 130, altColor);
-	//tft.fillRect(246, 21, 8, (100-volume)*1.3, mainColor);
+	tft.fillRect(tft.width()/2+77, 30, 13, 130, mainColor);
+	tft.fillRect(tft.width()/2+89, 10, 40, 170, altColor);
+	tft.drawRect(tft.width()/2+77, 30, 13, 130, mainColor);
+	tft.fillRect(tft.width()/2+78, 31, 11, (100-volume)*1.3, altColor);
+	//tft.fillRect(245, 20, 10, 130, mainColor);
+	//tft.fillRect(257, 0, 20, 170, altColor);
+	//tft.drawRect(245, 20, 10, 130, mainColor);
+	//tft.fillRect(246, 21, 8, (100-volume)*1.3, altColor);
 	tft.drawNumber(volume, tft.width()/2+91, ((100-volume)*1.3)+28);
 }
 
 void showVolume(PlayerDetails playerDetails) {
 	if (prevVolume != playerDetails.device.volumePercent) {
 		prevVolume = playerDetails.device.volumePercent;
-		tft.fillRect(tft.width()/2+77, 30, 13, 130, altColor);
-		tft.fillRect(tft.width()/2+89, 10, 40, 170, mainColor);
-		tft.drawRect(tft.width()/2+77, 30, 13, 130, altColor);
-		tft.fillRect(tft.width()/2+78, 31, 11, (100-playerDetails.device.volumePercent)*1.3, mainColor);
-		/*tft.fillRect(245, 20, 10, 130, altColor);
-		tft.fillRect(257, 0, 20, 170, mainColor);
-		tft.drawRect(245, 20, 10, 130, altColor);
-		tft.fillRect(246, 21, 8, (100-playerDetails.device.volumePercent)*1.3, mainColor);*/
+		tft.fillRect(tft.width()/2+77, 30, 13, 130, mainColor);
+		tft.fillRect(tft.width()/2+89, 10, 40, 170, altColor);
+		tft.drawRect(tft.width()/2+77, 30, 13, 130, mainColor);
+		tft.fillRect(tft.width()/2+78, 31, 11, (100-playerDetails.device.volumePercent)*1.3, altColor);
+		/*tft.fillRect(245, 20, 10, 130, mainColor);
+		tft.fillRect(257, 0, 20, 170, altColor);
+		tft.drawRect(245, 20, 10, 130, mainColor);
+		tft.fillRect(246, 21, 8, (100-playerDetails.device.volumePercent)*1.3, altColor);*/
 		tft.drawNumber(playerDetails.device.volumePercent, tft.width()/2+91, ((100-playerDetails.device.volumePercent)*1.3)+28);
 	}
 }
@@ -533,7 +533,7 @@ void loop() {
 		switch (screen) {
 			case PLAYING:
 				screen = MENU;
-				tft.fillScreen(mainColor);
+				tft.fillScreen(altColor);
 				Serial.println("MENU");
 				menuIndex = 0;
 				offset = 0;
@@ -543,7 +543,7 @@ void loop() {
 				break;
 			case MENU:
 				screen = SONGS;
-				tft.fillScreen(mainColor);
+				tft.fillScreen(altColor);
 				Serial.println("SONGS");
 				strcpy(playlistId, playlists[menuIndex].playlistId);
 				Serial.println(playlistId);
@@ -556,7 +556,7 @@ void loop() {
 				break;
 			case SONGS:
 				screen = PLAYING;
-				tft.fillScreen(mainColor);
+				tft.fillScreen(altColor);
 				char playlist[42] = "spotify:playlist:";
 				strcat(playlist, playlistId);
 
@@ -593,24 +593,24 @@ void loop() {
 					break;
 				case MENU:
 					if (menuIndex<maxPlaylists && tft.readPixel(0, 225) != TFT_BLACK) {
-						tft.fillRect(0, 16*(menuIndex-offset), 320, 16, mainColor);
+						tft.fillRect(0, 16*(menuIndex-offset), 320, 16, altColor);
 						tft.drawString(playlists[menuIndex].playlistName, 3, 16*(menuIndex++-offset), FONT_TYPE);
-						tft.fillRect(0, menuIndex*16-16*offset, 320, 16, altColor);
-						tft.setTextColor(mainColor);
-						tft.drawString(playlists[menuIndex].playlistName, 3, 16*(menuIndex-offset), FONT_TYPE);
+						tft.fillRect(0, menuIndex*16-16*offset, 320, 16, mainColor);
 						tft.setTextColor(altColor);
+						tft.drawString(playlists[menuIndex].playlistName, 3, 16*(menuIndex-offset), FONT_TYPE);
+						tft.setTextColor(mainColor);
 					} else if (menuIndex<maxPlaylists) {
 						Serial.println("scrolling down");
 						menuIndex++;
 						offset++;
-						tft.fillScreen(mainColor);
+						tft.fillScreen(altColor);
 						for (uint8_t i=0; i<15; i++) {
 							tft.drawString(playlists[menuIndex-14+i].playlistName, 3, 16*i, FONT_TYPE);
 						}
-						tft.fillRect(0, 224, 320, 16, altColor);
-						tft.setTextColor(mainColor);
-						tft.drawString(playlists[menuIndex].playlistName, 3, 224, FONT_TYPE);
+						tft.fillRect(0, 224, 320, 16, mainColor);
 						tft.setTextColor(altColor);
+						tft.drawString(playlists[menuIndex].playlistName, 3, 224, FONT_TYPE);
+						tft.setTextColor(mainColor);
 					}
 					break;
 				case SONGS:
@@ -620,27 +620,27 @@ void loop() {
 					//	Serial.println(songs[i].artistName);
 					//}
 					if (menuIndex<maxSongs && tft.readPixel(0, 225) != TFT_BLACK) {
-						tft.fillRect(0, 16*(menuIndex-offset), 320, 16, mainColor);
+						tft.fillRect(0, 16*(menuIndex-offset), 320, 16, altColor);
 						tft.drawString(songs[menuIndex].trackName, 3, 16*(menuIndex-offset), FONT_TYPE);
 						tft.drawString(songs[menuIndex].artistName, tft.width()-tft.textWidth(songs[menuIndex].artistName, 2)-3, 16*(menuIndex++-offset), FONT_TYPE);
-						tft.fillRect(0, menuIndex*16-16*offset, 320, 16, altColor);
-						tft.setTextColor(mainColor);
+						tft.fillRect(0, menuIndex*16-16*offset, 320, 16, mainColor);
+						tft.setTextColor(altColor);
 						tft.drawString(songs[menuIndex].trackName, 3, 16*(menuIndex-offset), FONT_TYPE);
 						tft.drawString(songs[menuIndex].artistName, tft.width()-tft.textWidth(songs[menuIndex].artistName, 2)-3, 16*(menuIndex-offset), FONT_TYPE);
-						tft.setTextColor(altColor);
+						tft.setTextColor(mainColor);
 					} else if (menuIndex<maxSongs) {
 						menuIndex++;
 						offset++;
-						tft.fillScreen(mainColor);
+						tft.fillScreen(altColor);
 						for (uint8_t i=0; i<15; i++) {
 							tft.drawString(songs[menuIndex-14+i].trackName, 3, 16*i, FONT_TYPE);
 							tft.drawString(songs[menuIndex-14+i].artistName, tft.width()-tft.textWidth(songs[menuIndex-14+i].artistName, 2)-3, 16*i, FONT_TYPE);
 						}
-						tft.fillRect(0, 224, 320, 16, altColor);
-						tft.setTextColor(mainColor);
+						tft.fillRect(0, 224, 320, 16, mainColor);
+						tft.setTextColor(altColor);
 						tft.drawString(songs[menuIndex].trackName, 3, 224, FONT_TYPE);
 						tft.drawString(songs[menuIndex].artistName, tft.width()-tft.textWidth(songs[menuIndex].artistName, 2)-3, 224, FONT_TYPE);
-						tft.setTextColor(altColor);
+						tft.setTextColor(mainColor);
 					}
 					break;
 			}
@@ -658,21 +658,21 @@ void loop() {
 						offset--;
 						Serial.println("redrawing");
 						Serial.println(menuIndex);
-						tft.fillScreen(mainColor);
+						tft.fillScreen(altColor);
 						for (uint8_t i=0; i<15; i++) {
 							tft.drawString(playlists[menuIndex+i].playlistName, 3, 16*i, FONT_TYPE);
 						}
-						tft.fillRect(0, 0, 320, 16, altColor);
-						tft.setTextColor(mainColor);
+						tft.fillRect(0, 0, 320, 16, mainColor);
+						tft.setTextColor(altColor);
 						tft.drawString(playlists[menuIndex].playlistName, 3, 0, FONT_TYPE);
-						tft.setTextColor(altColor);
-					} else if (menuIndex > 0) {
-						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, mainColor);
-						tft.drawString(playlists[menuIndex].playlistName, 3, 16*(menuIndex---offset), FONT_TYPE);
-						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, altColor);
 						tft.setTextColor(mainColor);
-						tft.drawString(playlists[menuIndex].playlistName, 3, 16*(menuIndex-offset), FONT_TYPE);
+					} else if (menuIndex > 0) {
+						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, altColor);
+						tft.drawString(playlists[menuIndex].playlistName, 3, 16*(menuIndex---offset), FONT_TYPE);
+						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, mainColor);
 						tft.setTextColor(altColor);
+						tft.drawString(playlists[menuIndex].playlistName, 3, 16*(menuIndex-offset), FONT_TYPE);
+						tft.setTextColor(mainColor);
 					}
 					break;
 				case SONGS:
@@ -684,25 +684,25 @@ void loop() {
 					if (menuIndex > 0 && menuIndex == offset) {
 						menuIndex--;
 						offset--;
-						tft.fillScreen(mainColor);
+						tft.fillScreen(altColor);
 						for (uint8_t i=0; i<15; i++) {
 							tft.drawString(songs[menuIndex+i].trackName, 3, 16*i, FONT_TYPE);
 							tft.drawString(songs[menuIndex+i].artistName, tft.width()-tft.textWidth(songs[menuIndex+i].artistName, 2)-3, 16*i, FONT_TYPE);
 						}
-						tft.fillRect(0, 0, 320, 16, altColor);
-						tft.setTextColor(mainColor);
+						tft.fillRect(0, 0, 320, 16, mainColor);
+						tft.setTextColor(altColor);
 						tft.drawString(songs[menuIndex].trackName, 3, 0, FONT_TYPE);
 						tft.drawString(songs[menuIndex].artistName, tft.width()-tft.textWidth(songs[menuIndex].artistName, 2)-3, 0, FONT_TYPE);
-						tft.setTextColor(altColor);
+						tft.setTextColor(mainColor);
 					} else if (menuIndex > 0) {
-						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, mainColor);
+						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, altColor);
 						tft.drawString(songs[menuIndex].trackName, 3, 16*(menuIndex-offset), FONT_TYPE);
 						tft.drawString(songs[menuIndex].artistName, tft.width()-tft.textWidth(songs[menuIndex].artistName, 2)-3, 16*(menuIndex---offset), FONT_TYPE);
-						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, altColor);
-						tft.setTextColor(mainColor);
+						tft.fillRect(0, (menuIndex-offset)*16, 320, 16, mainColor);
+						tft.setTextColor(altColor);
 						tft.drawString(songs[menuIndex].trackName, 3, 16*(menuIndex-offset), FONT_TYPE);
 						tft.drawString(songs[menuIndex].artistName, tft.width()-tft.textWidth(songs[menuIndex].artistName, 2)-3, 16*(menuIndex-offset), FONT_TYPE);
-						tft.setTextColor(altColor);
+						tft.setTextColor(mainColor);
 					}
 					break;
 
@@ -770,9 +770,9 @@ void loop() {
 		Serial.println();
 		String totTime = String((int)secondsPast/60) + ":" + (secondsElapsed.toInt()<10 ? "0"+secondsElapsed : secondsElapsed);
 
-		tft.fillRect(tft.width()/2-142, BAR_HEIGHT-6, 41, 18, mainColor);
+		tft.fillRect(tft.width()/2-142, BAR_HEIGHT-6, 41, 18, altColor);
 		tft.drawString(totTime, tft.width()/2-142, BAR_HEIGHT-6, FONT_TYPE);
-		tft.fillRect(tft.width()/2-100, BAR_HEIGHT, (int)(pixelPast), 13, altColor);
+		tft.fillRect(tft.width()/2-100, BAR_HEIGHT, (int)(pixelPast), 13, mainColor);
 
 		updateTime = millis() + 1000;
 
