@@ -1,3 +1,4 @@
 sketch.yaml
 .DS_Store
 secrets.h
+List_SPIFFS.h

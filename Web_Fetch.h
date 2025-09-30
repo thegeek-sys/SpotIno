@@ -1,17 +1,3 @@
-void listFiles(const char *dir) {
-  Serial.print("Listing files in directory: ");
-  Serial.println(String(dir));
-  File root = SPIFFS.open(dir);
-  if (!root) {
-    Serial.println("Failed to open directory");
-    return;
-  }
-  File file = root.openNextFile();
-  while (file) {
-    Serial.println("File: " + String(file.name()) + ", Size: " + file.size());
-    file = root.openNextFile();
-  }
-}
 // Fetch a file from the URL given and save it in SPIFFS
 // Return 1 if a web fetch was needed or 0 if file already exists
 bool getFile(String url, String filename) {
@@ -65,7 +51,6 @@ bool getFile(String url, String filename) {
 				WiFiClient * stream = http.getStreamPtr();
 
 				// Read all data from server
-				listFiles("/");
 				while (http.connected() && (len > 0 || len == -1)) {
 					// Get available data size
 					size_t size = stream->available();

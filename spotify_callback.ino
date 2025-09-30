@@ -49,11 +49,6 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 
 		uint32_t t = millis();
 
-    //char fName[strlen(currentlyPlaying.albumUri)+6];
-    //strcat(fName, "/");
-    //strcat(fName, currentlyPlaying.albumUri);
-    //strcat(fName, ".jpg");
-
     String fName = "/"+String(strrchr(currentlyPlaying.albumUri,':')+1)+".jpg";
     Serial.println(fName);
 
