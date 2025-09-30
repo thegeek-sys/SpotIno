@@ -1,15 +1,15 @@
 # SpotIno
-![Song](public/song.jpeg)
-
+<img src="public/song.jpeg" alt="song" width="400" />
 A DIY project to make a functional Spotify controller using an ESP32 with a TFT LCD Module ST7796 3.5' (easy to find on markets like Aliexpress).
 
-![Playlists](public/playlists.jpeg)
-![Songs](public/songs.jpeg)
 
 >[!warning]
 >Compatibility is only guaranteed with this kind of display
 
 This project also includes the possibility of searching between all your playlists and play a specific song
+
+<img src="public/playlists.jpeg" alt="song" width="400" />
+<img src="public/songs.jpeg" alt="song" width="400" />
 
 ## Requirements
 - Libraries
