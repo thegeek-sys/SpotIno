@@ -1,5 +1,4 @@
 void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
-
 	int blocksElapsed = 20*currentlyPlaying.progressMs/currentlyPlaying.durationMs;
 
 	String artists;
@@ -15,9 +14,9 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 		artists = artists.substring(0, artists.lastIndexOf(","));
 	}
 
-	if (SPIFFS.exists("/M81.jpg") == true) {
-		SPIFFS.remove("/M81.jpg");
-	}
+	//if (SPIFFS.exists("/M81.jpg") == true) {
+	//	SPIFFS.remove("/M81.jpg");
+	//}
 
 	if (song != currentlyPlaying.trackName) {
 		song = currentlyPlaying.trackName;
@@ -50,8 +49,16 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 
 		uint32_t t = millis();
 
+    //char fName[strlen(currentlyPlaying.albumUri)+6];
+    //strcat(fName, "/");
+    //strcat(fName, currentlyPlaying.albumUri);
+    //strcat(fName, ".jpg");
+
+    String fName = "/"+String(strrchr(currentlyPlaying.albumUri,':')+1)+".jpg";
+    Serial.println(fName);
+
 		// Fetch the jpg file from the specified URL, examples only, from imgur
-		bool loaded_ok = getFile(currentlyPlaying.albumImages[1].url, "/M81.jpg");
+		bool loaded_ok = getFile(currentlyPlaying.albumImages[1].url, fName);
 
 		t = millis() - t;
 		imageDelay = t;
@@ -63,7 +70,7 @@ void printCurrentlyPlayingToSerial(CurrentlyPlaying currentlyPlaying) {
 		t = millis();
 
 		// Now draw the SPIFFS file
-		TJpgDec.drawFsJpg(tft.width()/2-80, 20, "/M81.jpg");
+		TJpgDec.drawFsJpg(tft.width()/2-80, 20, fName);
 
 		t = millis() - t;
 		imageDelay+=t;
