@@ -41,4 +41,4 @@ Once you are done you can compile `spot.ino` and upload it to your ESP32!!
 - Light or dark theme: edit line 30 in `spot.ino` (you can choose between `LIGHT_THEME` and `DARK_THEME`)
 
 ## Circuit
-<img src="public/circuit-image.png" alt="circuit" width="600" />
+<img src="public/circuit_image.png" alt="circuit" width="600" />
