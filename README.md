@@ -8,8 +8,8 @@ A DIY project to make a functional Spotify controller using an ESP32 with a TFT 
 
 This project also includes the possibility of searching between all your playlists and play a specific song
 
-<img src="public/playlists.jpeg" alt="song" width="600" />
-<img src="public/songs.jpeg" alt="song" width="600" />
+<img src="public/playlists.jpeg" alt="playlists" width="600" />
+<img src="public/songs.jpeg" alt="songs" width="600" />
 
 ## Requirements
 - Libraries
@@ -39,3 +39,6 @@ Once you are done you can compile `spot.ino` and upload it to your ESP32!!
 ## Options
 - Set static IP address: edit line 33 in `spot.ino`
 - Light or dark theme: edit line 30 in `spot.ino` (you can choose between `LIGHT_THEME` and `DARK_THEME`)
+
+## Circuit
+<img src="public/circuit-image.jpeg" alt="circuit" width="600" />
