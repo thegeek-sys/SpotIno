@@ -31,6 +31,7 @@
 
 TFT_eSPI tft = TFT_eSPI();
 IPAddress ip(192, 168, 1, 135);
+uint16_t calData[5] = { 281, 3526, 359, 3403, 5 };
 
 //------- ---------------------- ------
 
@@ -173,7 +174,6 @@ void setup() {
 	//SPIFFS.remove("/next-track.bmp");
 
 	// initialise touch
-	uint16_t calData[5] = { 281, 3526, 359, 3403, 5 };
 	tft.setTouch(calData);
 
 	//led

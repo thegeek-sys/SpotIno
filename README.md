@@ -15,13 +15,19 @@ A DIY project to make a functional Spotify controller using an ESP32 with a TFT 
 First of all you need to get your Refresh Token by following [this giude](https://github.com/witnessmenow/spotify-api-arduino/tree/main?tab=readme-ov-file#setup-instructions)
 
 Once you have all the keys compile `secrets_sample.h` (needs to be renamed `secrets.h`) in this way:
-- `CLIENT_ID` -> put the client id of the app from the guide above
-- `CLIENT_SECRET` -> same as before
-- `SPOTIFY_REFRESH_TOKEN` -> you have to paste the refres token you generated from `getRefreshToken` example from the guide above
-- `SPOTIFY_MARKET` -> market of your Spotify (eg. EN, IT, ...)
-- `SSID` -> SSID of your wireless network
-- `PASSWORK` -> password of your wireless network
+- `CLIENT_ID`: put the client id of the app from the guide above
+- `CLIENT_SECRET`: same as before
+- `SPOTIFY_REFRESH_TOKEN`: you have to paste the refres token you generated from `getRefreshToken` example from the guide above
+- `SPOTIFY_MARKET`: market of your Spotify (eg. EN, IT, ...)
+- `SSID`: SSID of your wireless network
+- `PASSWORK`: password of your wireless network
 
 After you have finished compiling your Spotify informations you have to put the right pins for your display according to your configuration inside [`User_Setup.h`](https://github.com/Bodmer/TFT_eSPI/blob/master/User_Setup.h) (my [configuration](https://github.com/thegeek-sys/SpotIno/blob/main/User_Setup.h))
 
+To calibrate touch make sure to [calibrate](https://github.com/Bodmer/TFT_eSPI/blob/master/examples/Generic/Touch_calibrate/Touch_calibrate.ino) your touch screen and edit `spot.ino` at row 34 `calData[5]`
+
 Once you are done you are ready to compile `spot.ino` and upload it!
+
+## Options
+- Set static IP address: edit row 33 in `spot.ino`
+- Light or dark theme: edit row 30 in `spot.ino` (you can choose between `LIGHT_THEME` and `DARK_THEME`)
